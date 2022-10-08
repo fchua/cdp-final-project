@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2022-10-08T14:10:16.133Z" agent="5.0 (X11; Ubuntu)" etag="v1TnK2HHBbkO1dUD8hNS" version="20.4.0" type="github">
+<mxfile host="app.diagrams.net" modified="2022-10-08T14:39:56.737Z" agent="5.0 (X11; Ubuntu)" etag="Fo2tt7izOcIAZZ1-cWDe" version="20.4.0" type="github">
   <diagram id="odqYZEL_3UX7f1YgIcCa" name="Page-1">
-    <mxGraphModel dx="1285" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1269" dy="977" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -12,7 +12,7 @@
             <mxPoint x="440" y="380" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-1" value="TX" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-1" value="TX" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
           <mxGeometry x="240" y="280" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-5" value="User Wallet" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -35,19 +35,22 @@
         <mxCell id="dAVL8cyunABjWrSLzVpG-18" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-14" target="dAVL8cyunABjWrSLzVpG-16" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-19" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-14" target="dAVL8cyunABjWrSLzVpG-17" edge="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-19" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-14" target="dAVL8cyunABjWrSLzVpG-17" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-14" value="Policy ID" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="830" y="360" width="120" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-20" value="*:1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-16" target="dAVL8cyunABjWrSLzVpG-17" edge="1">
+        <mxCell id="uIfUFpnsK55GbAupwCwC-9" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=14;" edge="1" parent="1" source="dAVL8cyunABjWrSLzVpG-14" target="uIfUFpnsK55GbAupwCwC-7">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-16" value="User Token" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-14" value="Policy ID" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="910" y="380" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="dAVL8cyunABjWrSLzVpG-20" value="&lt;div style=&quot;font-size: 14px;&quot;&gt;1:1&lt;/div&gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=14;" parent="1" source="dAVL8cyunABjWrSLzVpG-16" target="dAVL8cyunABjWrSLzVpG-17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dAVL8cyunABjWrSLzVpG-16" value="User NFT (222)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="770" y="490" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-17" value="Reference Token" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-17" value="Reference NFT (100)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="930" y="490" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-21" value="&lt;h1&gt;Animal Shelter/Rescue&lt;/h1&gt;&lt;p&gt;Rescued animals are tracked using NFTs.&lt;/p&gt;&lt;p&gt;People who wants to donate and help are issued tokens to represent their contribution.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
@@ -56,7 +59,7 @@
         <mxCell id="dAVL8cyunABjWrSLzVpG-35" value="&lt;h1&gt;Donation Tracking&lt;/h1&gt;&lt;p&gt;Users who will donate will be issued a token (333) to represent their donation.&lt;/p&gt;&lt;p&gt;On-chain validator requirements&lt;br&gt;1. Inspect if the reference token is still valid based on the current DATUM&lt;br&gt;2. Check if the new total amount = old total amount + donation amount in the output datum&lt;br&gt;3. Check if the correct FT token was minted&lt;br&gt;4. Check if the donation was sent to the donation wallet&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="40" y="800" width="440" height="170" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-36" value="&lt;h1&gt;What to keep track in the reference token DATUM&lt;/h1&gt;&lt;div&gt;1. Can we keep track of the total amount donated?&lt;br&gt;2. Can we have a boolean flag to indicate the status (alive or not) to allow/prevent further donations&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-36" value="&lt;h1&gt;What to keep track in the reference token datum&lt;/h1&gt;&lt;div&gt;1. Can we keep track of the total amount donated?&lt;br&gt;2. Can we have a boolean flag to indicate the status (alive or not) to allow/prevent further donations&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="520" y="800" width="440" height="150" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-39" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-38" target="dAVL8cyunABjWrSLzVpG-1" edge="1">
@@ -74,122 +77,143 @@
         <mxCell id="dAVL8cyunABjWrSLzVpG-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-40" target="dAVL8cyunABjWrSLzVpG-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-40" value="UTXO w/ Reference Token" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-40" value="UTXO w/ Reference Token" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
           <mxGeometry x="140" y="420" width="80" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-44" value="UTXO w/ Reference Token" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-44" value="UTXO w/ Reference Token" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
           <mxGeometry x="510" y="460" width="80" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-45" value="&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;Reference NFT Output Datum (Inline)&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;inlineDatum&quot;: {&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;constructor&quot;: 0,&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;fields&quot;: [&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; {&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;int&quot;: 42&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; }&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; ]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; },&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
-          <mxGeometry x="432.5" y="550" width="235" height="180" as="geometry" />
+        <mxCell id="dAVL8cyunABjWrSLzVpG-45" value="&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;Reference NFT Output Datum (Inline)&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;inlineDatum&quot;: {&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;constructor&quot;: 0,&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;fields&quot;: [&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; {&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;int&quot;: 42&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; }&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; ]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; },&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="265" y="540" width="235" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-46" value="&lt;h1&gt;CIP-0068&lt;/h1&gt;&lt;p&gt;100 - Reference NFT - Constantly updated (DATUM)&lt;/p&gt;&lt;p&gt;222 - User NFT - Same as CIP-0025 (permanent record of the animal)&lt;/p&gt;&lt;p&gt;333 - User FT - Represents the donation&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="750" y="190" width="370" height="200" as="geometry" />
+        <mxCell id="dAVL8cyunABjWrSLzVpG-46" value="&lt;h1&gt;CIP-0068&lt;/h1&gt;&lt;p&gt;100 - Reference NFT - Constantly updated (datum)&lt;/p&gt;&lt;p&gt;222 - User NFT - Same as CIP-0025 (permanent record of the animal)&lt;/p&gt;&lt;p&gt;333 - User FT - Represents the donation&lt;/p&gt;&lt;p&gt;Must have the same policy ID&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="750" y="120" width="400" height="160" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-48" value="DOG-01" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-          <mxGeometry x="420" y="1370" width="80" height="80" as="geometry" />
+          <mxGeometry x="420" y="1220" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-49" value="DOG-02" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-          <mxGeometry x="610" y="1370" width="80" height="80" as="geometry" />
+          <mxGeometry x="610" y="1220" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-50" value="DOG-03" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-          <mxGeometry x="800" y="1370" width="80" height="80" as="geometry" />
+          <mxGeometry x="800" y="1220" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-51" value="DOG-01" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-          <mxGeometry x="420" y="1190" width="80" height="80" as="geometry" />
+          <mxGeometry x="420" y="1040" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-52" value="DOG-02" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-          <mxGeometry x="610" y="1190" width="80" height="80" as="geometry" />
+          <mxGeometry x="610" y="1040" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-53" value="DOG-03" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-          <mxGeometry x="800" y="1190" width="80" height="80" as="geometry" />
+          <mxGeometry x="800" y="1040" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-55" value="" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="40" y="1320" as="sourcePoint" />
-            <mxPoint x="1020" y="1320" as="targetPoint" />
+            <mxPoint x="40" y="1170" as="sourcePoint" />
+            <mxPoint x="1120" y="1170" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-56" value="&lt;h1&gt;222 NFT&lt;/h1&gt;&lt;p&gt;Fixed metadata&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="40" y="1190" width="190" height="120" as="geometry" />
+          <mxGeometry x="40" y="1040" width="190" height="120" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-57" value="&lt;h1&gt;100 NFT&lt;/h1&gt;&lt;p&gt;Reference NFT with updatable datum&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="40" y="1340" width="190" height="120" as="geometry" />
+          <mxGeometry x="40" y="1190" width="190" height="120" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-58" value="" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="40" y="1480" as="sourcePoint" />
-            <mxPoint x="1020" y="1480" as="targetPoint" />
+            <mxPoint x="40" y="1330" as="sourcePoint" />
+            <mxPoint x="1120" y="1330" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-59" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-48" target="dAVL8cyunABjWrSLzVpG-51" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="400" y="1470" as="sourcePoint" />
-            <mxPoint x="480" y="1280" as="targetPoint" />
+            <mxPoint x="400" y="1320" as="sourcePoint" />
+            <mxPoint x="480" y="1130" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-60" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-49" target="dAVL8cyunABjWrSLzVpG-52" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="470" y="1380" as="sourcePoint" />
-            <mxPoint x="470" y="1280" as="targetPoint" />
+            <mxPoint x="470" y="1230" as="sourcePoint" />
+            <mxPoint x="470" y="1130" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-61" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-50" target="dAVL8cyunABjWrSLzVpG-53" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="660" y="1380" as="sourcePoint" />
-            <mxPoint x="660" y="1280" as="targetPoint" />
+            <mxPoint x="660" y="1230" as="sourcePoint" />
+            <mxPoint x="660" y="1130" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-62" value="&lt;h1&gt;333 FT&lt;/h1&gt;&lt;p&gt;User fungible token representing transactions such as donations&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="40" y="1520" width="190" height="120" as="geometry" />
+          <mxGeometry x="40" y="1370" width="190" height="120" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-71" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-63" target="dAVL8cyunABjWrSLzVpG-48" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-63" value="DOG-01" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="240" y="1560" width="80" height="80" as="geometry" />
+          <mxGeometry x="250" y="1450" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-64" value="DOG-01" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="330" y="1560" width="80" height="80" as="geometry" />
+          <mxGeometry x="330" y="1410" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-65" value="DOG-01" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="420" y="1560" width="80" height="80" as="geometry" />
+          <mxGeometry x="370" y="1500" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-74" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-66" target="dAVL8cyunABjWrSLzVpG-49" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-66" value="DOG-02" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="550" y="1560" width="80" height="80" as="geometry" />
+          <mxGeometry x="550" y="1410" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-75" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-67" target="dAVL8cyunABjWrSLzVpG-49" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-67" value="DOG-02" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="640" y="1560" width="80" height="80" as="geometry" />
+          <mxGeometry x="620" y="1460" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-77" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-69" target="dAVL8cyunABjWrSLzVpG-50" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-69" value="DOG-03" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="850" y="1560" width="80" height="80" as="geometry" />
+          <mxGeometry x="780" y="1410" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-78" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-70" target="dAVL8cyunABjWrSLzVpG-50" edge="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-78" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-70" target="dAVL8cyunABjWrSLzVpG-50" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="dAVL8cyunABjWrSLzVpG-70" value="DOG-03" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="940" y="1560" width="80" height="80" as="geometry" />
+          <mxGeometry x="860" y="1370" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-72" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;dashed=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="dAVL8cyunABjWrSLzVpG-64" target="dAVL8cyunABjWrSLzVpG-48" edge="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-72" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-64" target="dAVL8cyunABjWrSLzVpG-48" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="290" y="1570" as="sourcePoint" />
-            <mxPoint x="460" y="1450" as="targetPoint" />
+            <mxPoint x="290" y="1420" as="sourcePoint" />
+            <mxPoint x="460" y="1300" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dAVL8cyunABjWrSLzVpG-73" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-65" target="dAVL8cyunABjWrSLzVpG-48" edge="1">
+        <mxCell id="dAVL8cyunABjWrSLzVpG-73" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;dashed=1;" parent="1" source="dAVL8cyunABjWrSLzVpG-65" target="dAVL8cyunABjWrSLzVpG-48" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="380" y="1570" as="sourcePoint" />
-            <mxPoint x="462" y="1462" as="targetPoint" />
+            <mxPoint x="380" y="1420" as="sourcePoint" />
+            <mxPoint x="462" y="1312" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="uIfUFpnsK55GbAupwCwC-1" value="Datum in the output tracks the total amount of donation" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1200" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uIfUFpnsK55GbAupwCwC-3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=14;dashed=1;" edge="1" parent="1" source="uIfUFpnsK55GbAupwCwC-2" target="dAVL8cyunABjWrSLzVpG-49">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uIfUFpnsK55GbAupwCwC-2" value="DOG-02" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="700" y="1500" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uIfUFpnsK55GbAupwCwC-5" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;fontSize=14;" edge="1" parent="1" source="uIfUFpnsK55GbAupwCwC-4" target="dAVL8cyunABjWrSLzVpG-48">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uIfUFpnsK55GbAupwCwC-4" value="DOG-01" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1440" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uIfUFpnsK55GbAupwCwC-8" value="&lt;div&gt;1:M&lt;/div&gt;" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=14;" edge="1" parent="1" source="uIfUFpnsK55GbAupwCwC-7" target="dAVL8cyunABjWrSLzVpG-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uIfUFpnsK55GbAupwCwC-7" value="User FT (333)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="490" width="80" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
