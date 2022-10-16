@@ -200,3 +200,45 @@ For more interactive discussion, you can join the [IOG Technical Community
 Discord](https://discord.gg/sSF5gmDBYg).
 
 Thanks!
+
+
+## Features
+
+### Animal Reference Tokens
+An animal token represents a single animal in the blockchain. This serves as the reference token (100) for user tokens (222, 333, etc.). These tokens are locked within a script and contains datum.
+
+### Animal User Tokens
+
+
+### Donation Tokens
+
+### 
+
+## Datum - Parameters
+Wallets which are allowed to mint
+Minimum donation amount
+Treasure wallet
+
+## Redeemer - Actions
+-- Mint (only certain wallets can mint, reference token must be owned by the script)
+-- Donate (any wallet can donate, check if reference token exists)
+
+Treasury Address - Where the donation
+
+Only allow minting if donation was made to the treasury
+
+ScriptContext
+
+What to check
+- Donation was made to the treasury address
+- FT was minted
+- 
+
+TxInfo
+txInfoOutputs
+- Check if correct NFT is minted
+- Check if there's a donation to the treasury
+
+Mint validation
+- both (100) and (200) are minted
+
