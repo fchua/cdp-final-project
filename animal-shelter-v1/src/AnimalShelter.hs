@@ -39,6 +39,10 @@ data PolicyParam = PolicyParam
 PlutusTx.makeLift ''PolicyParam
 --PlutusTx.unstableMakeIsData ''PolicyParam
 
+data ShelterRedeemer = Register | Donate
+    deriving (Show, Generic)
+PlutusTx.unstableMakeIsData ''ShelterRedeemer
+
 {-# INLINABLE params1 #-}
 params1 :: PolicyParam
 params1 = PolicyParam 
@@ -47,9 +51,13 @@ params1 = PolicyParam
     }
 
 {-# INLINABLE mkPolicy #-}
-mkPolicy :: PolicyParam -> () -> ScriptContext -> Bool
-mkPolicy _ () ctx = traceIfFalse "UTxO not consumed"   hasUTxO           &&
-                    traceIfFalse "wrong amount minted" checkMintedAmount
+mkPolicy :: PolicyParam -> ShelterRedeemer -> ScriptContext -> Bool
+mkPolicy _ redeemer ctx = 
+    traceIfFalse "UTxO not consumed"   hasUTxO           &&
+    traceIfFalse "wrong amount minted" checkMintedAmount &&
+    case redeemer of
+        Register -> True
+        Donate -> True
   where
     info :: TxInfo
     info = scriptContextTxInfo ctx
@@ -76,7 +84,43 @@ data NFTParams = NFTParams
     , npAddress :: !Address
     } deriving (Generic, FromJSON, ToJSON, Show)
 
-type NFTSchema = Endpoint "mint" NFTParams
+type NFTSchema = 
+        Endpoint "mint"     NFTParams
+    .\/ Endpoint "register" NFTParams
+    .\/ Endpoint "donate"   NFTParams
+
+register :: NFTParams -> Contract w NFTSchema Text ()
+register np = do
+    Contract.logInfo @String "Registering animal..."
+    utxos <- utxosAt $ npAddress np
+    case Map.keys utxos of
+        []       -> Contract.logError @String "no utxo found"
+        oref : _ -> do
+            let tn      = npToken np
+                refTn   = TokenName $ (appendByteString "(100)" (unTokenName tn))
+                usrTn   = TokenName $ (appendByteString "(222)" (unTokenName tn))
+                r       = Redeemer $ PlutusTx.toBuiltinData Register
+                val     = Value.singleton (curSymbol params1) refTn 1 <> Value.singleton (curSymbol params1) usrTn 1
+                lookups = Constraints.mintingPolicy (policy params1) <> Constraints.unspentOutputs utxos
+                tx      = Constraints.mustMintValueWithRedeemer r val <> Constraints.mustSpendPubKeyOutput oref
+            ledgerTx <- submitTxConstraintsWith @Void lookups tx
+            void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
+            Contract.logInfo @String $ printf "forged %s" (show val)
+
+donate :: NFTParams -> Contract w NFTSchema Text ()
+donate np = do
+    Contract.logInfo @String "Sending donation..."
+    utxos <- utxosAt $ npAddress np
+    case Map.keys utxos of
+        []       -> Contract.logError @String "no utxo found"
+        oref : _ -> do
+            let tn      = npToken np
+            let val     = Value.singleton (curSymbol params1) "(333) Frank" 1
+                lookups = Constraints.mintingPolicy (policy params1) <> Constraints.unspentOutputs utxos
+                tx      = Constraints.mustMintValue val <> Constraints.mustSpendPubKeyOutput oref
+            ledgerTx <- submitTxConstraintsWith @Void lookups tx
+            void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
+            Contract.logInfo @String $ printf "forged %s" (show val)            
 
 mint :: NFTParams -> Contract w NFTSchema Text ()
 mint np = do
@@ -85,7 +129,7 @@ mint np = do
         []       -> Contract.logError @String "no utxo found"
         oref : _ -> do
             let tn      = npToken np
-            let val     = Value.singleton (curSymbol params1) tn 1
+            let val     = Value.singleton (curSymbol params1) "(100) Frank" 1 <> Value.singleton (curSymbol params1) "(200) Frank" 1
                 lookups = Constraints.mintingPolicy (policy params1) <> Constraints.unspentOutputs utxos
                 tx      = Constraints.mustMintValue val <> Constraints.mustSpendPubKeyOutput oref
             ledgerTx <- submitTxConstraintsWith @Void lookups tx
@@ -93,9 +137,11 @@ mint np = do
             Contract.logInfo @String $ printf "forged %s" (show val)
 
 endpoints :: Contract () NFTSchema Text ()
-endpoints = mint' >> endpoints
+endpoints = awaitPromise (mint' `select` register' `select` donate') >> endpoints
   where
-    mint' = awaitPromise $ endpoint @"mint" mint
+    mint'     = endpoint @"mint"     mint
+    register' = endpoint @"register" register
+    donate'   = endpoint @"donate"   donate
 
 test :: IO ()
 test = runEmulatorTraceIO $ do
@@ -104,11 +150,11 @@ test = runEmulatorTraceIO $ do
         w2 = knownWallet 2
     h1 <- activateContractWallet w1 endpoints
     h2 <- activateContractWallet w2 endpoints
-    callEndpoint @"mint" h1 $ NFTParams
+    callEndpoint @"register" h1 $ NFTParams
         { npToken   = tn
         , npAddress = mockWalletAddress w1
         }
-    callEndpoint @"mint" h2 $ NFTParams
+    callEndpoint @"donate" h2 $ NFTParams
         { npToken   = tn
         , npAddress = mockWalletAddress w2
         }

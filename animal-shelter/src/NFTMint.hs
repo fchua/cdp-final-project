@@ -23,13 +23,8 @@ module NFTMint
   )
 where
 
-import           Cardano.Api                          (PlutusScript,
-                                                       PlutusScriptV2,
-                                                       writeFileTextEnvelope)
-import           Cardano.Api.Shelley                  (PlutusScript (..),
-                                                       ScriptDataJsonSchema (ScriptDataJsonDetailedSchema),
-                                                       fromPlutusData,
-                                                       scriptDataToJson)
+import           Cardano.Api                          (PlutusScript, PlutusScriptV2, writeFileTextEnvelope)
+import           Cardano.Api.Shelley                  (PlutusScript (..), ScriptDataJsonSchema (ScriptDataJsonDetailedSchema), fromPlutusData, scriptDataToJson)
 import           Codec.Serialise
 import           Data.Aeson                           as A
 import qualified Data.ByteString.Lazy                 as LBS
@@ -38,16 +33,16 @@ import           Data.Functor                         (void)
 import           Data.Text                            (pack, Text)
 import           Data.Void                            (Void)
 import           GHC.Generics                         (Generic)
-import           Ledger                               (getCardanoTxId)
-import qualified Ledger.Constraints                   as Constraints
+import           Ledger                               
+import           Ledger.Constraints                   as Constraints
 import qualified Ledger.Typed.Scripts                 as Scripts
-import qualified Ledger.Value                         as Value
-import           Plutus.Contract
-import qualified Plutus.Script.Utils.V2.Typed.Scripts as PSU.V2
+import           Ledger.Value                         as Value
+import           Plutus.Contract                      as Contract
+--import qualified Plutus.Script.Utils.V2.Typed.Scripts as PSU.V2
 import           Plutus.Trace.Emulator                as Emulator
-import qualified Plutus.V1.Ledger.Api                 as PlutusV1
-import qualified Plutus.V2.Ledger.Api                 as PlutusV2
-import           Plutus.V2.Ledger.Contexts            (ownCurrencySymbol)
+--import qualified Plutus.V1.Ledger.Api                 as PlutusV1
+--import qualified Plutus.V2.Ledger.Api                 as PlutusV2
+--import           Plutus.V2.Ledger.Contexts            (ownCurrencySymbol)
 import qualified PlutusTx
 import           PlutusTx.Prelude                     as P hiding (Semigroup (..), unless, (.))
 import           Prelude                              (String, IO, Semigroup (..), Show (..), print, (.))
@@ -57,19 +52,19 @@ import           Wallet.Emulator.Wallet               (knownWallet)
 -- this should be fixed so the policy id will be the same
 data NFTParams = NFTParams
     { mpProjectName :: !BuiltinByteString
-    , mpProjectPubKeyHash :: !PlutusV2.PubKeyHash
+    , mpProjectPubKeyHash :: !PaymentPubKeyHash
     } deriving Show
 
 PlutusTx.makeLift ''NFTParams
 PlutusTx.unstableMakeIsData ''NFTParams
 
 params1 :: NFTParams
-params1 = NFTParams { mpProjectName = "Hound Haven", mpProjectPubKeyHash = PlutusV2.PubKeyHash "82669eddc629c8ce5cc3cb908cec6de339281bb0a0ec111880ff0936132ac8b0" }
+params1 = NFTParams { mpProjectName = "Hound Haven", mpProjectPubKeyHash = PaymentPubKeyHash "82669eddc629c8ce5cc3cb908cec6de339281bb0a0ec111880ff0936132ac8b0" }
 
 params2 :: NFTParams
-params2 = NFTParams { mpProjectName = "Pawssion Project", mpProjectPubKeyHash = PlutusV2.PubKeyHash "82669eddc629c8ce5cc3cb908cec6de339281bb0a0ec111880ff0936132ac8b0" }
+params2 = NFTParams { mpProjectName = "Pawssion Project", mpProjectPubKeyHash = PaymentPubKeyHash "82669eddc629c8ce5cc3cb908cec6de339281bb0a0ec111880ff0936132ac8b0" }
 
-printParams = print $ "Params: " <> A.encode (scriptDataToJson ScriptDataJsonDetailedSchema $ fromPlutusData $ PlutusV2.toData params1)
+--printParams = print $ "Params: " <> A.encode (scriptDataToJson ScriptDataJsonDetailedSchema $ fromPlutusData $ PlutusV2.toData params1)
 
 data NFTRedeemer = Register | Update | Unregister | Donate
     deriving Show
@@ -78,7 +73,7 @@ PlutusTx.makeLift ''NFTRedeemer
 PlutusTx.unstableMakeIsData ''NFTRedeemer
 
 {-# INLINABLE mkPolicy #-}
-mkPolicy :: NFTParams -> NFTRedeemer -> PlutusV2.ScriptContext -> Bool
+mkPolicy :: NFTParams -> NFTRedeemer -> ScriptContext -> Bool
 mkPolicy p r ctx = traceIfFalse "wrong amount minted" checkNFTAmount &&
   case r of
     Register -> True
@@ -103,37 +98,47 @@ mkPolicy p r ctx = traceIfFalse "wrong amount minted" checkNFTAmount &&
     As a Minting Policy
 -}
 
+-- V1
 policy :: NFTParams -> Scripts.MintingPolicy
-policy mp = PlutusV2.mkMintingPolicyScript $
+policy mp = mkMintingPolicyScript $
     $$(PlutusTx.compile [|| wrap ||])
     `PlutusTx.applyCode`
      PlutusTx.liftCode mp
   where
-    wrap mp' = PSU.V2.mkUntypedMintingPolicy $ mkPolicy mp'
+    wrap mp' = wrapMintingPolicy $ mkPolicy mp'
+
+-- V2
+--policy :: NFTParams -> Scripts.MintingPolicy
+--policy mp = PlutusV2.mkMintingPolicyScript $
+--    $$(PlutusTx.compile [|| wrap ||])
+--    `PlutusTx.applyCode`
+--     PlutusTx.liftCode mp
+--  where
+--    wrap mp' = PSU.V2.mkUntypedMintingPolicy $ mkPolicy mp'
 
 {-
     As a Script
 -}
 
-script :: PlutusV2.Script
-script = PlutusV2.unMintingPolicyScript $ policy params1
+--script :: PlutusV2.Script
+--script = PlutusV2.unMintingPolicyScript $ policy params1
 
 {-
     As a Short Byte String
 -}
 
-scriptSBS :: SBS.ShortByteString
-scriptSBS = SBS.toShort . LBS.toStrict $ serialise script
+--scriptSBS :: SBS.ShortByteString
+--scriptSBS = SBS.toShort . LBS.toStrict $ serialise script
 
 {-
     As a Serialised Script
 -}
 
-serialisedScript :: PlutusScript PlutusScriptV2
-serialisedScript = PlutusScriptSerialised scriptSBS
+--serialisedScript :: PlutusScript PlutusScriptV2
+--serialisedScript = PlutusScriptSerialised scriptSBS
 
-writeSerialisedScript :: IO ()
-writeSerialisedScript = void $ writeFileTextEnvelope "nft-mint-V2.plutus" Nothing serialisedScript
+--writeSerialisedScript :: IO ()
+--writeSerialisedScript = void $ writeFileTextEnvelope "nft-mint-V2.plutus" Nothing serialisedScript
 
 data RegisterParams = RegisterParams
     { rpTokenName :: !PlutusV2.TokenName
