@@ -1,0 +1,11 @@
+currency symbol (policy id) must be the same
+
+-- no deadline for minting
+
+-- parameters are PaymentPubKeyHash, ProjectName
+
+-- Redeemer
+ MintReferenceToken
+ MintUserToken
+ MintDonationToken
+ 
