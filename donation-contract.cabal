@@ -41,7 +41,8 @@ common lang
 library
     import: lang
     exposed-modules:
-      MyModule
+      DonateAndMint
+      Donation
       Trace
     build-depends:
       base >= 4.9 && < 5,
@@ -57,7 +58,6 @@ library
       plutus-ledger-constraints -any,
       plutus-tx -any,
       plutus-tx-plugin -any,
-      plutus-script-utils -any,
       text -any,
       lens -any,
     hs-source-dirs: src

@@ -49,11 +49,8 @@ import qualified Plutus.V1.Ledger.Api                 as PlutusV1
 import qualified Plutus.V2.Ledger.Api                 as PlutusV2
 import           Plutus.V2.Ledger.Contexts            (ownCurrencySymbol)
 import qualified PlutusTx
-import           PlutusTx.Prelude                     as P hiding
-                                                           (Semigroup (..),
-                                                            unless, (.))
-import           Prelude                              (String, IO, Semigroup (..),
-                                                       Show (..), print, (.))
+import           PlutusTx.Prelude                     as P hiding (Semigroup (..), unless, (.))
+import           Prelude                              (String, IO, Semigroup (..), Show (..), print, (.))
 import           Text.Printf                          (printf)
 import           Wallet.Emulator.Wallet               (knownWallet)
 

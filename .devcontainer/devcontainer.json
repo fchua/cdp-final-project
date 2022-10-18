@@ -1,6 +1,6 @@
 {
-    "name": "Plutus Starter Project",
-    "image": "docker.io/inputoutput/plutus-starter-devcontainer:v0.1.0",
+    "name": "Donation Contract Project",
+    "image": "docker.io/inputoutput/donation-contract-devcontainer:v0.1.0",
 
     "remoteUser": "plutus",
 

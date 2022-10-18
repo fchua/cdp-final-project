@@ -53,12 +53,11 @@ data MintParams  = MintParams
 PlutusTx.unstableMakeIsData ''MintParams 
 -- OFF CHAIN    
 
-fst' :: (a,b,c) -> a
-fst' (x,_,_) = x
+--fst' :: (a,b,c) -> a
+--fst' (x,_,_) = x
 
-snd' :: (a,b,c) -> b
-snd' (_,x,_) = x
-
+--snd' :: (a,b,c) -> b
+--snd' (_,x,_) = x
 
 --getTot :: [Value] ->  [(CurrencySymbol, TokenName, Integer)] ->  [(CurrencySymbol, TokenName, Integer)]
 --getTot [] x = x

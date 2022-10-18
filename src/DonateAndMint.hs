@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveAnyClass      #-}
 {-# LANGUAGE DeriveGeneric       #-}
 {-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoImplicitPrelude   #-}
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -10,7 +11,7 @@
 {-# LANGUAGE TypeFamilies        #-}
 {-# LANGUAGE TypeOperators       #-}
 
-module NFT where
+module DonateAndMint where
 
 import           Control.Monad          hiding (fmap)
 import           Data.Aeson             (FromJSON, ToJSON)
@@ -29,6 +30,29 @@ import           Ledger.Value           as Value
 import           Prelude                (IO, Semigroup (..), Show (..), String)
 import           Text.Printf            (printf)
 import           Wallet.Emulator.Wallet
+
+data ShelterParam = ShelterParam
+    { spTreasury :: !PaymentPubKeyHash
+    , spManager  :: !PaymentPubKeyHash
+    , spName     :: !BuiltinByteString
+    } deriving Show
+PlutusTx.makeLift ''ShelterParam
+PlutusTx.unstableMakeIsData  ''ShelterParam
+
+data ShelterRedeemer = Mint | Donate
+PlutusTx.unstableMakeIsData  ''ShelterRedeemer
+
+{-# INLINABLE mkPolicy2 #-}
+mkPolicy2 :: ShelterParam -> ShelterRedeemer -> ScriptContext -> Bool
+mkPolicy2 param red ctx = True
+
+policy2 :: ShelterParam -> Scripts.MintingPolicy
+policy2 param = mkMintingPolicyScript $
+        $$(PlutusTx.compile [|| wrap ||])
+        `PlutusTx.applyCode`
+        PlutusTx.liftCode param
+    where
+        wrap mp' = Scripts.wrapMintingPolicy $ mkPolicy2 mp'
 
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: TxOutRef -> TokenName -> () -> ScriptContext -> Bool

@@ -1,9 +1,9 @@
 { source-repo-override ? { } }:
 ########################################################################
-# default.nix -- The top-level nix build file for plutus-starter.
+# default.nix -- The top-level nix build file for donation-contract.
 #
 # This file defines various attributes that are used for building and
-# developing plutus-starter.
+# developing donation-contract.
 #
 ########################################################################
 
@@ -11,7 +11,7 @@ let
   # Here a some of the various attributes for the variable 'packages':
   #
   # { pkgs
-  #   plutus-starter: {
+  #   donation-contract: {
   #     haskell: {
   #       project # The Haskell project created by haskell-nix.project
   #       packages # All the packages defined by our project, including dependencies
@@ -25,11 +25,11 @@ let
   # }
   packages = import ./nix { inherit source-repo-override; };
 
-  inherit (packages) pkgs plutus-starter;
-  project = plutus-starter.haskell.project;
+  inherit (packages) pkgs donation-contract;
+  project = donation-contract.haskell.project;
 in
 {
-  inherit pkgs plutus-starter;
+  inherit pkgs donation-contract;
 
   inherit project;
 }
