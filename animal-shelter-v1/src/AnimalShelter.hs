@@ -50,17 +50,44 @@ params1 = PolicyParam
     , ppManagerPubKeyHash = PaymentPubKeyHash "82669eddc629c8ce5cc3cb908cec6de339281bb0a0ec111880ff0936132ac8b0" 
     }
 
+-- traceIfFalse "wrong amount minted" checkMintedAmount &&
+
+-- https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext
+
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: PolicyParam -> ShelterRedeemer -> ScriptContext -> Bool
-mkPolicy _ redeemer ctx = 
-    traceIfFalse "UTxO not consumed"   hasUTxO           &&
-    traceIfFalse "wrong amount minted" checkMintedAmount &&
+mkPolicy pp redeemer ctx = 
     case redeemer of
         Register -> True
+        -- must mint 2 tokens (reference and user token)
+        -- reference token must have a label (100)
+        -- user token must have a label (222)
+        -- only the manager is allowed to mint the token
+        -- the tokens must be sent to the script address
         Donate -> True
+        -- must transfer minimum amount to treasury
+        -- must mint only 1 token
+        -- minted token name must be same as the reference token and has a label (333)
+        -- reference token must be valid and owned by the script
+        -- any one can mint
   where
     info :: TxInfo
     info = scriptContextTxInfo ctx
+
+    inputs :: [TxInInfo]
+    inputs = txInfoInputs info
+
+    outputs :: [TxOut]
+    outputs = txInfoOutputs info
+
+    minted :: Value
+    minted = txInfoMint info
+
+    signedByManager :: Bool
+    signedByManager = txSignedBy info (ppManagerPubKeyHash pp)
+
+    validReferenceAndUserTokens :: Bool
+    validReferenceAndUserTokens = True
 
     hasUTxO :: Bool
     hasUTxO = True
