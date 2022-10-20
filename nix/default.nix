@@ -11,11 +11,11 @@ let
 
   haskell-nix = pkgs.haskell-nix;
 
-  donation-contract = import ./pkgs {
+  plutus-starter = import ./pkgs {
     inherit pkgs haskell-nix sources plutus source-repo-override;
   };
 
 in
 {
-  inherit pkgs donation-contract;
+  inherit pkgs plutus-starter;
 }

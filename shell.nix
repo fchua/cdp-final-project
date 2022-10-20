@@ -1,13 +1,13 @@
 { pure ? false, source-repo-override ? { } }:
 let
   packages = import ./. { inherit source-repo-override; };
-  inherit (packages) pkgs donation-contract project;
+  inherit (packages) pkgs plutus-starter project;
 
 in
   project.shellFor {
     withHoogle = false;
 
-    nativeBuildInputs = with donation-contract; [
+    nativeBuildInputs = with plutus-starter; [
       hlint
       cabal-install
       haskell-language-server

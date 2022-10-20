@@ -83,5 +83,5 @@ let
     build = pkgs.recurseIntoAttrs (mkHaskellDimension pkgs projectPackages);
   });
 in
-  ciJobsets // { required = derivationAggregate "required-donation-contract" ciJobsets; }
+  ciJobsets // { required = derivationAggregate "required-plutus-starter" ciJobsets; }
 
