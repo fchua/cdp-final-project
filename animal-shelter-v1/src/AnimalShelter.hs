@@ -24,12 +24,17 @@ import           Plutus.Trace.Emulator  as Emulator
 import qualified PlutusTx
 import           PlutusTx.Prelude       hiding (Semigroup(..), unless)
 import           Ledger                 hiding (mint, singleton)
+import           Plutus.V1.Ledger.Api   as V1
+import           Ledger.Ada             as Ada
 import           Ledger.Constraints     as Constraints
 import qualified Ledger.Typed.Scripts   as Scripts
 import           Ledger.Value           as Value
 import           Prelude                (IO, Semigroup (..), Show (..), String)
 import           Text.Printf            (printf)
 import           Wallet.Emulator.Wallet
+
+minDonation :: Integer
+minDonation = 5000000 -- 5 ADA
 
 --- ON-CHAIN ---
 
@@ -38,7 +43,7 @@ data PolicyParam = PolicyParam
     { ppTreasuryPubKeyHash :: !PaymentPubKeyHash -- treasury public key hash
     , ppManagerPubKeyHash  :: !PaymentPubKeyHash -- manager public key hash
     , ppProjectName        :: !BuiltinByteString -- additional identifier
-    } deriving (Show, Generic)
+    } deriving (Show, Generic, FromJSON, ToJSON)
 
 PlutusTx.makeLift ''PolicyParam
 --PlutusTx.unstableMakeIsData ''PolicyParam
@@ -62,19 +67,21 @@ PlutusTx.unstableMakeIsData ''ShelterRedeemer
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: PolicyParam -> ShelterRedeemer -> ScriptContext -> Bool
 mkPolicy pp redeemer ctx = 
-    case redeemer of
-        Register -> True
+  case redeemer of
+        Register -> traceIfFalse "Wallet not authorized to mint" signedByManager
         -- must mint 2 tokens (reference and user token)
         -- reference token must have a label (100)
         -- user token must have a label (222)
         -- only the manager is allowed to mint the token
         -- the tokens must be sent to the script address
-        Donate -> True
+        Donate -> traceIfFalse "Minimum donation not met" minDonationReceived &&
+                  traceIfFalse "Invalid mint amount" (mintedTokens == 1)
         -- must transfer minimum amount to treasury
         -- must mint only 1 token
         -- minted token name must be same as the reference token and has a label (333)
         -- reference token must be valid and owned by the script
         -- any one can mint
+        Unregister -> True
   where
     info :: TxInfo
     info = scriptContextTxInfo ctx
@@ -88,8 +95,53 @@ mkPolicy pp redeemer ctx =
     minted :: Value
     minted = txInfoMint info
 
+    ownSym :: CurrencySymbol
+    ownSym = ownCurrencySymbol ctx
+
+    treasuryAddress :: Address
+    treasuryAddress = pubKeyHashAddress (ppTreasuryPubKeyHash pp) Nothing
+
+    managerAddress :: Address
+    managerAddress = pubKeyHashAddress (ppManagerPubKeyHash pp) Nothing
+
     signedByManager :: Bool
-    signedByManager = txSignedBy info (ppManagerPubKeyHash pp)
+    signedByManager = txSignedBy info (unPaymentPubKeyHash $ ppManagerPubKeyHash pp)
+
+    mintedTokens :: Integer
+    mintedTokens = sum $ fmap extractInt (filter (\v -> (extractSym v) == ownSym && isDonationToken (extractTok v)) (flattenValue minted))
+
+    isDonationToken :: BuiltinByteString -> Bool
+    isDonationToken s = True -- (take 5 (show s)) == "(333)"
+
+    -- get values sent to treasury address
+    donationOutputs :: [Value]
+    donationOutputs = [ (txOutValue o) | o <- outputs, (txOutAddress o) == treasuryAddress ]
+
+    -- flattenValue :: Value -> [(CurrencySymbol, TokenName, Integer)] 
+    -- flatten values to triple
+    donationAmount :: [ (CurrencySymbol, TokenName, Integer) ]
+    donationAmount = flattenValue $ mconcat donationOutputs
+
+    -- filter ADA only
+    donatedAda :: [ (CurrencySymbol, TokenName, Integer) ]
+    donatedAda = [ a | a <- donationAmount, (extractSym a) == Ada.adaSymbol ]
+
+    -- get total Integer
+    totalAda :: Integer
+    totalAda = sum $ fmap extractInt donatedAda
+
+    extractSym :: (CurrencySymbol, TokenName, Integer) -> CurrencySymbol
+    extractSym (s, _, _) = s
+
+    extractTok :: (CurrencySymbol, TokenName, Integer) -> BuiltinByteString
+    extractTok (_, t, _) = unTokenName t
+
+    extractInt :: (CurrencySymbol, TokenName, Integer) -> Integer
+    extractInt (_, _, i) = i
+
+    -- True if minimum ADA donation was sent
+    minDonationReceived :: Bool
+    minDonationReceived = totalAda >= minDonation
 
     validReferenceAndUserTokens :: Bool
     validReferenceAndUserTokens = True
@@ -126,7 +178,7 @@ data DonateParams = DonateParams
     { dpToken       :: !TokenName
     , dpAddress     :: !Address
     , dpPolicyParam :: !PolicyParam
-    , npDonation    :: !Integer
+    , dpDonation    :: !Integer
     } deriving (Generic, FromJSON, ToJSON, Show)
 
 type ShelterSchema = 
@@ -151,11 +203,11 @@ register rp = do
                 lookups = Constraints.mintingPolicy (policy pp) <>
                           Constraints.unspentOutputs utxos
                 tx      = Constraints.mustMintValueWithRedeemer r mintVal <>
-                          Constraints.mustPayToTheScript () mintVal <> -- is this the way to send the tokens to the script after minting
+                          --Constraints.mustPayToTheScript () mintVal <> -- is this the way to send the tokens to the script after minting
                           Constraints.mustSpendPubKeyOutput oref -- not sure if this is needed, where will this go?
             ledgerTx <- submitTxConstraintsWith @Void lookups tx
             void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
-            Contract.logInfo @String $ printf "forged %s" (show val)
+            Contract.logInfo @String $ printf "forged %s" (show mintVal)
 
 unregister :: RegisterParams -> Contract w ShelterSchema Text ()
 unregister rp = do
@@ -168,7 +220,7 @@ unregister rp = do
                 pp      = rpPolicyParam rp -- policy parameter
                 refTn   = TokenName $ (appendByteString "(100)" (unTokenName tn))
                 usrTn   = TokenName $ (appendByteString "(222)" (unTokenName tn))
-                r       = Redeemer $ PlutusTx.toBuiltinData Register
+                r       = Redeemer $ PlutusTx.toBuiltinData Unregister
                 mintVal = Value.singleton (curSymbol pp) refTn (- 1) <>
                           Value.singleton (curSymbol pp) usrTn (- 1)
                 lookups = Constraints.mintingPolicy (policy pp) <>
@@ -177,29 +229,30 @@ unregister rp = do
                           Constraints.mustSpendPubKeyOutput oref -- not sure if this is needed, where will this go?
             ledgerTx <- submitTxConstraintsWith @Void lookups tx
             void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
-            Contract.logInfo @String $ printf "forged %s" (show val)
+            Contract.logInfo @String $ printf "forged %s" (show mintVal)
 
 donate :: DonateParams -> Contract w ShelterSchema Text ()
-donate np = do
-    Contract.logInfo @String "Sending donation..."
-    utxos <- utxosAt $ dpAddress np
+donate dp = do
+    logInfo @String "Sending donation..."
+    utxos <- utxosAt $ dpAddress dp
     case Map.keys utxos of
         []       -> Contract.logError @String "no utxo found"
         oref : _ -> do
-            let tn          = dpToken np
-                pp          = dpPolicyParam np
+            let tn          = dpToken dp
+                pp          = dpPolicyParam dp
                 donTn       = TokenName $ (appendByteString "(333)" (unTokenName tn))
+                r           = Redeemer $ PlutusTx.toBuiltinData Donate
                 tPkh        = ppTreasuryPubKeyHash pp
-                donation    = npDonation pp
+                donation    = dpDonation dp
                 mintVal     = Value.singleton (curSymbol pp) donTn 1 -- mint donation token
                 donationVal = (Ada.lovelaceValueOf donation)
                 lookups     = Constraints.mintingPolicy (policy pp) <>
                               Constraints.unspentOutputs utxos
-                tx          = Constraints.mustMintValue mintVal <>
+                tx          = Constraints.mustMintValueWithRedeemer r mintVal <>
                               Constraints.mustPayToPubKey tPkh donationVal -- send donation to treasury wallet
             ledgerTx <- submitTxConstraintsWith @Void lookups tx
             void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
-            Contract.logInfo @String $ printf "forged %s" (show val)
+            logInfo @String $ printf "forged %s" (show mintVal)
 
 endpoints :: Contract () ShelterSchema Text ()
 endpoints = awaitPromise (register' `select` donate' `select` unregister') >> endpoints
@@ -243,6 +296,7 @@ test = runEmulatorTraceIO $ do
         { dpToken       = tn
         , dpAddress     = mockWalletAddress w3
         , dpPolicyParam = paramPol
+        , dpDonation    = 5000000
         }
     
     void $ Emulator.waitNSlots 2
@@ -251,13 +305,14 @@ test = runEmulatorTraceIO $ do
         { dpToken       = tn
         , dpAddress     = mockWalletAddress w4
         , dpPolicyParam = paramPol
+        , dpDonation    = 4999999
         }
 
     void $ Emulator.waitNSlots 2
 
-    callEndpoint @"unregister" h2 $ RegisterParams
-        { rpToken       = tn
-        , rpAddress     = mockWalletAddress w2
-        , rpDescription = "Female/White"
-        , rpPolicyParam = paramPol
-        }
+    -- callEndpoint @"unregister" h2 $ RegisterParams
+    --     { rpToken       = tn
+    --     , rpAddress     = mockWalletAddress w2
+    --     , rpDescription = "Female/White"
+    --     , rpPolicyParam = paramPol
+    --     }
