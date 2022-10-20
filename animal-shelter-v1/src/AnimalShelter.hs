@@ -43,7 +43,7 @@ data ShelterRedeemer = Register | Donate
     deriving (Show, Generic)
 PlutusTx.unstableMakeIsData ''ShelterRedeemer
 
-{-# INLINABLE params1 #-}
+--{-# INLINABLE params1 #-}
 params1 :: PolicyParam
 params1 = PolicyParam 
     { ppProjectPubKeyHash = PaymentPubKeyHash "82669eddc629c8ce5cc3cb908cec6de339281bb0a0ec111880ff0936132ac8b0" 
@@ -82,12 +82,13 @@ curSymbol p = scriptCurrencySymbol $ policy p
 data NFTParams = NFTParams
     { npToken   :: !TokenName
     , npAddress :: !Address
+    , npPolicyParam :: !PolicyParam
     } deriving (Generic, FromJSON, ToJSON, Show)
 
 type NFTSchema = 
-        Endpoint "mint"     NFTParams
-    .\/ Endpoint "register" NFTParams
-    .\/ Endpoint "donate"   NFTParams
+        Endpoint "register"   NFTParams
+    .\/ Endpoint "donate"     NFTParams
+    .\/ Endpoint "unregister" NFTParams
 
 register :: NFTParams -> Contract w NFTSchema Text ()
 register np = do
@@ -115,47 +116,60 @@ donate np = do
         []       -> Contract.logError @String "no utxo found"
         oref : _ -> do
             let tn      = npToken np
-            let val     = Value.singleton (curSymbol params1) "(333) Frank" 1
-                lookups = Constraints.mintingPolicy (policy params1) <> Constraints.unspentOutputs utxos
+                pp      = npPolicyParam np
+            let val     = Value.singleton (curSymbol pp) "(333) Frank" 1
+                lookups = Constraints.mintingPolicy (policy pp) <> Constraints.unspentOutputs utxos
                 tx      = Constraints.mustMintValue val <> Constraints.mustSpendPubKeyOutput oref
             ledgerTx <- submitTxConstraintsWith @Void lookups tx
             void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
             Contract.logInfo @String $ printf "forged %s" (show val)            
 
-mint :: NFTParams -> Contract w NFTSchema Text ()
-mint np = do
-    utxos <- utxosAt $ npAddress np
-    case Map.keys utxos of
-        []       -> Contract.logError @String "no utxo found"
-        oref : _ -> do
-            let tn      = npToken np
-            let val     = Value.singleton (curSymbol params1) "(100) Frank" 1 <> Value.singleton (curSymbol params1) "(200) Frank" 1
-                lookups = Constraints.mintingPolicy (policy params1) <> Constraints.unspentOutputs utxos
-                tx      = Constraints.mustMintValue val <> Constraints.mustSpendPubKeyOutput oref
-            ledgerTx <- submitTxConstraintsWith @Void lookups tx
-            void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
-            Contract.logInfo @String $ printf "forged %s" (show val)
-
 endpoints :: Contract () NFTSchema Text ()
-endpoints = awaitPromise (mint' `select` register' `select` donate') >> endpoints
+endpoints = awaitPromise (register' `select` donate') >> endpoints
   where
-    mint'     = endpoint @"mint"     mint
     register' = endpoint @"register" register
     donate'   = endpoint @"donate"   donate
 
 test :: IO ()
 test = runEmulatorTraceIO $ do
     let tn = "ABC"
-        w1 = knownWallet 1
-        w2 = knownWallet 2
+        w1 = knownWallet 1 -- treasury
+        w2 = knownWallet 2 -- manager
+        w3 = knownWallet 3 -- donor
+        w4 = knownWallet 4 -- donor
+        w5 = knownWallet 5 -- donor
+        pkhT = mockWalletPaymentPubKeyHash w1
+        pkhM = mockWalletPaymentPubKeyHash w2
+        paramP = PolicyParam
+            { ppProjectPubKeyHash = pkhT
+            , ppManagerPubKeyHash = pkhM
+            }
     h1 <- activateContractWallet w1 endpoints
     h2 <- activateContractWallet w2 endpoints
-    callEndpoint @"register" h1 $ NFTParams
-        { npToken   = tn
-        , npAddress = mockWalletAddress w1
+    h3 <- activateContractWallet w3 endpoints
+    h4 <- activateContractWallet w4 endpoints
+    h5 <- activateContractWallet w5 endpoints
+
+    callEndpoint @"register" h2 $ NFTParams
+        { npToken       = tn
+        , npAddress     = mockWalletAddress w2
+        , npPolicyParam = paramP
         }
-    callEndpoint @"donate" h2 $ NFTParams
-        { npToken   = tn
-        , npAddress = mockWalletAddress w2
+
+    void $ Emulator.waitNSlots 2
+    
+    callEndpoint @"donate" h3 $ NFTParams
+        { npToken       = tn
+        , npAddress     = mockWalletAddress w3
+        , npPolicyParam = paramP
         }
-    void $ Emulator.waitNSlots 1
+    
+    void $ Emulator.waitNSlots 2
+
+    callEndpoint @"donate" h4 $ NFTParams
+        { npToken       = tn
+        , npAddress     = mockWalletAddress w4
+        , npPolicyParam = paramP
+        }
+    
+    void $ Emulator.waitNSlots 2
