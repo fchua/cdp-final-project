@@ -77,6 +77,12 @@ data ShelterRedeemer = Register TokenName | Donate TokenName | Unregister TokenN
     deriving (Show, Generic)
 PlutusTx.unstableMakeIsData ''ShelterRedeemer
 
+data ShelterDatum = ShelterDatum
+    { sdManagerPubKeyHash  :: !PaymentPubKeyHash -- manager public key hash
+    , sdProjectName        :: !BuiltinByteString -- additional identifier
+    } deriving (Show, Generic, FromJSON, ToJSON)
+PlutusTx.unstableMakeIsData ''ShelterDatum -- Used by Validator not MintingPolicy    
+
 data AnimalDatum = AnimalDatum Integer
     deriving Show
 PlutusTx.unstableMakeIsData ''AnimalDatum
@@ -84,7 +90,7 @@ PlutusTx.unstableMakeIsData ''AnimalDatum
 -- NOT SURE if this is really necessary since we are using Minting Policy not Validator
 data Shelter
 instance Scripts.ValidatorTypes Shelter where
-    type instance DatumType Shelter = AnimalDatum
+    type instance DatumType Shelter = ShelterDatum
     type instance RedeemerType Shelter = ShelterRedeemer
 
 --params1 :: PolicyParam
@@ -97,15 +103,67 @@ instance Scripts.ValidatorTypes Shelter where
 
 -- https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html
 
+-- Returns the reference token name
+{-# INLINABLE toReferenceToken #-}
+toReferenceToken :: TokenName -> TokenName
+toReferenceToken tn = TokenName $ appendByteString "(100)" (unTokenName tn)
+
+-- Returns the user token name
+{-# INLINABLE toUserToken #-}
+toUserToken :: TokenName -> TokenName
+toUserToken tn = TokenName $ appendByteString "(222)" (unTokenName tn)
+
+-- Returns the donation token name
+{-# INLINABLE toDonationToken #-}
+toDonationToken :: TokenName -> TokenName
+toDonationToken tn = TokenName $ appendByteString "(333)" (unTokenName tn)
+
+-- Returns the CurrencySymbol
+{-# INLINABLE extractSym #-}
+extractSym :: (CurrencySymbol, TokenName, Integer) -> CurrencySymbol
+extractSym (s, _, _) = s
+
+-- Returns the TokenName
+{-# INLINABLE extractTok #-}
+extractTok :: (CurrencySymbol, TokenName, Integer) -> TokenName
+extractTok (_, t, _) = t
+
+-- Returns the Integer
+{-# INLINABLE extractInt #-}
+extractInt :: (CurrencySymbol, TokenName, Integer) -> Integer
+extractInt (_, _, i) = i
+
+{-# INLINEABLE mkValidator #-}
+mkValidator :: ShelterDatum -> ShelterRedeemer -> ScriptContext -> Bool
+mkValidator _ _ _ = traceIfFalse "Spending not allowed" False
+
+typedShelterValidator :: Scripts.TypedValidator Shelter
+typedShelterValidator = Scripts.mkTypedValidator @Shelter
+    $$(PlutusTx.compile [|| mkValidator ||])
+    $$(PlutusTx.compile [|| wrap ||])
+  where
+    wrap = Scripts.wrapValidator @ShelterDatum @ShelterRedeemer
+
+shelterValidator :: Validator
+shelterValidator = Scripts.validatorScript typedShelterValidator
+
+shelterHash :: Ledger.ValidatorHash
+shelterHash = Scripts.validatorHash typedShelterValidator
+
+shelterAddress :: Ledger.Address
+shelterAddress = scriptHashAddress shelterHash
+
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: PolicyParam -> ShelterRedeemer -> ScriptContext -> Bool
 mkPolicy pp redeemer ctx = 
   case redeemer of
-        Register tn -> traceIfFalse "Wallet not authorized to mint tokens" signedByManager
-        -- must mint 2 tokens (reference and user token)
-        -- reference token must have a label (100)
-        -- user token must have a label (222)
-        -- only the manager is allowed to mint the token
+        Register tn -> traceIfFalse "Wallet not authorized to mint tokens" signedByManager &&
+                       traceIfFalse "Reference (100) token not minted" (checkReferenceToken tn) &&
+                       traceIfFalse "User (222) token not minted" (checkUserToken tn)
+        -- must mint 2 tokens (reference and user token) - DONE
+        -- reference token must have a label (100) - DONE
+        -- user token must have a label (222) - DONE
+        -- only the manager is allowed to mint the token - DONE
         -- the tokens must be sent to the script address
         Donate tn -> traceIfFalse "Minimum donation not met" minDonationReceived &&
                      traceIfFalse "Donation token not minted" (checkDonationToken tn)
@@ -141,26 +199,35 @@ mkPolicy pp redeemer ctx =
     signedByManager :: Bool
     signedByManager = txSignedBy info (unPaymentPubKeyHash $ ppManagerPubKeyHash pp)
 
-    -- True if the token name is valid and there's only one
+    -- True if there's only 1 donation token minted
     checkDonationToken :: TokenName -> Bool
     checkDonationToken tn = cnt == 1
         where
             cnt = sum $ fmap extractInt (filter (\fv -> isDonationToken tn fv) (flattenValue minted))
 
-    -- Returns the reference token name
-    toReferenceToken :: TokenName -> TokenName
-    toReferenceToken tn = TokenName $ appendByteString "(100)" (unTokenName tn)
+    -- True if there's only 1 reference token minted
+    checkReferenceToken :: TokenName -> Bool
+    checkReferenceToken tn = cnt == 1
+        where
+            cnt = sum $ fmap extractInt (filter (\fv -> isReferenceToken tn fv) (flattenValue minted))
 
-    toUserToken :: TokenName -> TokenName
-    toUserToken tn = TokenName $ appendByteString "(222)" (unTokenName tn)
+    -- True if there's only 1 user token minted
+    checkUserToken :: TokenName -> Bool
+    checkUserToken tn = cnt == 1
+        where
+            cnt = sum $ fmap extractInt (filter (\fv -> isUserToken tn fv) (flattenValue minted))
 
-    toDonationToken :: TokenName -> TokenName
-    toDonationToken tn = TokenName $ appendByteString "(333)" (unTokenName tn)
-
-    -- tn -> is the asset name
-    -- tn' -> is the asset name with prepended label (333)
+    -- True if the token name has a prefix (333)
     isDonationToken :: TokenName -> (CurrencySymbol, TokenName, Integer) -> Bool
     isDonationToken tn fv = (extractSym fv) == ownSym && (extractTok fv) == (toDonationToken tn)
+
+    -- True if the token name has a prefix (100)
+    isReferenceToken :: TokenName -> (CurrencySymbol, TokenName, Integer) -> Bool
+    isReferenceToken tn fv = (extractSym fv) == ownSym && (extractTok fv) == (toReferenceToken tn)
+
+    -- True if the token name has a prefix (222)
+    isUserToken :: TokenName -> (CurrencySymbol, TokenName, Integer) -> Bool
+    isUserToken tn fv = (extractSym fv) == ownSym && (extractTok fv) == (toUserToken tn)
 
     -- get values sent to treasury address
     donationOutputs :: [Value]
@@ -179,44 +246,24 @@ mkPolicy pp redeemer ctx =
     totalAda :: Integer
     totalAda = sum $ fmap extractInt donatedAda
 
-    extractSym :: (CurrencySymbol, TokenName, Integer) -> CurrencySymbol
-    extractSym (s, _, _) = s
-
-    extractTok :: (CurrencySymbol, TokenName, Integer) -> TokenName
-    extractTok (_, t, _) = t
-
-    extractInt :: (CurrencySymbol, TokenName, Integer) -> Integer
-    extractInt (_, _, i) = i
-
     -- True if minimum ADA donation was sent
     minDonationReceived :: Bool
     minDonationReceived = totalAda >= minDonation
 
-    validReferenceAndUserTokens :: Bool
-    validReferenceAndUserTokens = True
-
-    hasUTxO :: Bool
-    hasUTxO = True
-
-    checkMintedAmount :: Bool
-    checkMintedAmount = True
-
--- function to generate the parameterized minting policy script
+-- Generate parameterized minting policy
 policy :: PolicyParam -> Scripts.MintingPolicy
 policy p = mkMintingPolicyScript $
-        $$(PlutusTx.compile [|| wrap ||])
-        `PlutusTx.applyCode`
-        PlutusTx.liftCode p
+        $$(PlutusTx.compile [|| wrap ||]) `PlutusTx.applyCode` PlutusTx.liftCode p
     where
         wrap mp' = Scripts.wrapMintingPolicy $ mkPolicy mp'
 
+-- Generate policy hash - but don't know how to use this yet
 policyHash :: Scripts.MintingPolicy -> MintingPolicyHash
 policyHash mp = mintingPolicyHash mp
 
 -- function to generate the currency symbol using the parametarized minting policy script
-curSymbol :: PolicyParam -> CurrencySymbol
-curSymbol p = scriptCurrencySymbol $ policy p
-
+toCurrencySymbol :: PolicyParam -> CurrencySymbol
+toCurrencySymbol p = scriptCurrencySymbol $ policy p
 
 --- OFF-CHAIN ---
 
@@ -248,11 +295,11 @@ register rp = do
         oref : _ -> do -- at least 1 utxo found
             let tn      = rpToken rp
                 pp      = rpPolicyParam rp -- policy parameter
-                refTn   = TokenName $ (appendByteString "(100)" (unTokenName tn))
-                usrTn   = TokenName $ (appendByteString "(222)" (unTokenName tn))
+                refTn   = toReferenceToken tn
+                usrTn   = toUserToken tn
                 r       = Redeemer $ PlutusTx.toBuiltinData (Register tn)
-                mintVal = Value.singleton (curSymbol pp) refTn 1 <>
-                          Value.singleton (curSymbol pp) usrTn 1
+                mintVal = Value.singleton (toCurrencySymbol pp) refTn 1 <>
+                          Value.singleton (toCurrencySymbol pp) usrTn 1
                 lookups = Constraints.mintingPolicy (policy pp) <>
                           Constraints.unspentOutputs utxos
                 tx      = Constraints.mustMintValueWithRedeemer r mintVal <>
@@ -273,11 +320,11 @@ unregister rp = do
         oref : _ -> do -- at least 1 utxo found
             let tn      = rpToken rp
                 pp      = rpPolicyParam rp -- policy parameter
-                refTn   = TokenName $ (appendByteString "(100)" (unTokenName tn))
-                usrTn   = TokenName $ (appendByteString "(222)" (unTokenName tn))
+                refTn   = toReferenceToken tn
+                usrTn   = toUserToken tn
                 r       = Redeemer $ PlutusTx.toBuiltinData (Unregister tn)
-                mintVal = Value.singleton (curSymbol pp) refTn (- 1) <>
-                          Value.singleton (curSymbol pp) usrTn (- 1)
+                mintVal = Value.singleton (toCurrencySymbol pp) refTn (- 1) <>
+                          Value.singleton (toCurrencySymbol pp) usrTn (- 1)
                 lookups = Constraints.mintingPolicy (policy pp) <>
                           Constraints.unspentOutputs utxos
                 tx      = Constraints.mustMintValueWithRedeemer r mintVal <>
@@ -295,11 +342,11 @@ donate dp = do
         oref : _ -> do
             let tn          = dpToken dp
                 pp          = dpPolicyParam dp
-                donTn       = TokenName $ (appendByteString "(333)" (unTokenName tn))
+                donTn       = toDonationToken tn
                 r           = Redeemer $ PlutusTx.toBuiltinData (Donate tn)
                 tPkh        = ppTreasuryPubKeyHash pp
                 donation    = dpDonation dp
-                mintVal     = Value.singleton (curSymbol pp) donTn 1 -- mint donation token
+                mintVal     = Value.singleton (toCurrencySymbol pp) donTn 1 -- mint donation token
                 donationVal = (Ada.lovelaceValueOf donation)
                 lookups     = Constraints.mintingPolicy (policy pp) <>
                               Constraints.unspentOutputs utxos
@@ -307,7 +354,7 @@ donate dp = do
                               Constraints.mustPayToPubKey tPkh donationVal -- send donation to treasury wallet
             ledgerTx <- submitTxConstraintsWith @Void lookups tx
             void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
-            logInfo @String $ printf "forged %s" (show mintVal)
+            logInfo @String $ printf "Minted %s" (show mintVal)
 
 endpoints :: Contract () ShelterSchema Text ()
 endpoints = awaitPromise (register' `select` donate' `select` unregister') >> endpoints
