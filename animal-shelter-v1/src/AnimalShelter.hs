@@ -385,6 +385,8 @@ test = runEmulatorTraceIO $ do
     h4 <- activateContractWallet w4 endpoints
     h5 <- activateContractWallet w5 endpoints
 
+    -- manager mints reference and user token
+    -- SHOULD SUCCEED
     callEndpoint @"register" h2 $ RegisterParams
         { rpToken       = tn
         , rpAddress     = mockWalletAddress w2
@@ -393,6 +395,17 @@ test = runEmulatorTraceIO $ do
         }
 
     void $ Emulator.waitNSlots 2
+
+    -- unathorized user attempts to mint reference and user token
+    -- SHOULD FAIL
+    callEndpoint @"register" h3 $ RegisterParams
+        { rpToken       = tn
+        , rpAddress     = mockWalletAddress w3
+        , rpDescription = "Female/White"
+        , rpPolicyParam = paramPol
+        }
+
+    void $ Emulator.waitNSlots 2    
     
     callEndpoint @"donate" h3 $ DonateParams
         { dpToken       = tn
