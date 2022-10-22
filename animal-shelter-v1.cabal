@@ -1,0 +1,26 @@
+Cabal-Version:      2.4
+Name:               animal-shelter-v1
+Version:            0.1.0.0
+Author:             Franklin Chua
+Maintainer:         franklin.chua@fireclay.ph
+Build-Type:         Simple
+Copyright:          © 2022 Franklin Chua
+
+library
+  hs-source-dirs:      animal-shelter-v1/src
+  exposed-modules:     AnimalShelter
+  build-depends:       aeson
+                     , base ^>=4.14.1.0
+                     , containers
+                     , data-default
+                     , freer-extras
+                     , playground-common
+                     , plutus-contract
+                     , plutus-ledger
+                     , plutus-ledger-api
+                     , plutus-ledger-constraints
+                     , plutus-tx-plugin
+                     , plutus-tx
+                     , text
+  default-language:    Haskell2010
+  ghc-options:         -Wall -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas -fno-strictness -fno-spec-constr -fno-specialise
