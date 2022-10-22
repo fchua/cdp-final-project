@@ -44,15 +44,18 @@ import           Wallet.Emulator.Wallet
 -- [Working Features]
 -- Checking of minimum amount of ADA donation in order to mint
 -- Checking if donation was sent to treasury address
--- Only manager wallet is allowed to mint reference token (100) and user token (222)
+-- Only manager wallet is allowed to mint/burn reference token (100) and user token (222)
+-- Token name validation vs. prefix (100), (222), (333)
 -- Donor wallets allowed to mint user token (333)
 -- Only 1 user token (333) can be minted at a time
 
--- [Current Limitations]
--- Reference token (100) and user token (222) not yet locked to the script address
--- No validation against the name
--- Datum not yet used
--- (100)TokenName not utilizing the datum for anything
+-- [Current Limitations and Issues]
+-- Reference token (100) and user token (222) not yet locked to the script address (?) - validator vs. minting script
+-- When minting the (333) token there's no validation against the existing (100) token
+-- When minting the (100) and (200) token there's checking for duplicate asset name
+-- Datum not yet used to keep track of total amount donated to a given (100) token
+-- Some residual codes from plutus-pioneer-program not yet removed
+-- No usage of off-chain metadata, purely policy + asset name only
 
 minDonation :: Integer
 minDonation = 5000000 -- 5 ADA
@@ -177,8 +180,8 @@ mkPolicy pp redeemer ctx =
     info :: TxInfo
     info = scriptContextTxInfo ctx
 
-    inputs :: [TxInInfo]
-    inputs = txInfoInputs info
+    --inputs :: [TxInInfo]
+    --inputs = txInfoInputs info
 
     outputs :: [TxOut]
     outputs = txInfoOutputs info
@@ -304,7 +307,7 @@ register rp = do
                           Constraints.unspentOutputs utxos
                 tx      = Constraints.mustMintValueWithRedeemer r mintVal <>
                           Constraints.mustIncludeDatum (Datum $ BI.mkI 1) <>
-                          --Constraints.mustPayToTheScript (AnimalDatum 1) mintVal <> -- is this the way to send the tokens to the script after minting
+                          --Constraints.mustPayToTheScript (AnimalDatum 1) mintVal <> INCLUDE ADA -- is this the way to send the tokens to the script after minting
                           Constraints.mustSpendPubKeyOutput oref -- not sure if this is needed, where will this go?
             --ledgerTx <- submitTxConstraintsWith @Shelter lookups tx
             ledgerTx <- submitTxConstraintsWith @Void lookups tx
@@ -371,6 +374,7 @@ test = runEmulatorTraceIO $ do
         w3       = knownWallet 3 -- donor
         w4       = knownWallet 4 -- donor
         w5       = knownWallet 5 -- donor
+        w6       = knownWallet 6 -- donor
         pkhT     = mockWalletPaymentPubKeyHash w1
         pkhM     = mockWalletPaymentPubKeyHash w2
         paramPol = PolicyParam
@@ -384,6 +388,7 @@ test = runEmulatorTraceIO $ do
     h3 <- activateContractWallet w3 endpoints
     h4 <- activateContractWallet w4 endpoints
     h5 <- activateContractWallet w5 endpoints
+    h6 <- activateContractWallet w6 endpoints
 
     -- manager mints reference and user token
     -- SHOULD SUCCEED
@@ -398,15 +403,16 @@ test = runEmulatorTraceIO $ do
 
     -- unathorized user attempts to mint reference and user token
     -- SHOULD FAIL
-    callEndpoint @"register" h3 $ RegisterParams
+    callEndpoint @"register" h4 $ RegisterParams
         { rpToken       = tn
-        , rpAddress     = mockWalletAddress w3
+        , rpAddress     = mockWalletAddress w4
         , rpDescription = "Female/White"
         , rpPolicyParam = paramPol
         }
 
     void $ Emulator.waitNSlots 2    
     
+    -- MINIMUM DONATION - SHOULD SUCCEED
     callEndpoint @"donate" h3 $ DonateParams
         { dpToken       = tn
         , dpAddress     = mockWalletAddress w3
@@ -416,6 +422,7 @@ test = runEmulatorTraceIO $ do
     
     void $ Emulator.waitNSlots 2
 
+    -- NOT ENOUGH DONATION - SHOULD FAIL
     callEndpoint @"donate" h4 $ DonateParams
         { dpToken       = tn
         , dpAddress     = mockWalletAddress w4
@@ -429,16 +436,16 @@ test = runEmulatorTraceIO $ do
         { dpToken       = tn
         , dpAddress     = mockWalletAddress w5
         , dpPolicyParam = paramPol
-        , dpDonation    = 10000000
+        , dpDonation    = 5000000
         }
 
     void $ Emulator.waitNSlots 2
     
-    callEndpoint @"donate" h3 $ DonateParams
+    callEndpoint @"donate" h6 $ DonateParams
         { dpToken       = tn
-        , dpAddress     = mockWalletAddress w3
+        , dpAddress     = mockWalletAddress w6
         , dpPolicyParam = paramPol
-        , dpDonation    = 5000000
+        , dpDonation    = 10000000
         }
 
     void $ Emulator.waitNSlots 1
